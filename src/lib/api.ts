@@ -1,6 +1,28 @@
 // API Client для работы с backend
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Determine API URL based on environment
+const getApiUrl = (): string => {
+  // If VITE_API_URL is explicitly set, use it
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // In production (Vercel), default to Render backend
+  if (import.meta.env.PROD) {
+    // Default production backend URL
+    return 'https://your-drive.onrender.com/api';
+  }
+  
+  // Development default
+  return 'http://localhost:3001/api';
+};
+
+const API_URL = getApiUrl();
+
+// Log API URL in development for debugging
+if (import.meta.env.DEV) {
+  console.log('[API] Using API URL:', API_URL);
+}
 
 // Helper function to check if backend is ready
 async function waitForBackend(maxAttempts = 10, delay = 1000): Promise<boolean> {
