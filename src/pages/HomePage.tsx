@@ -199,8 +199,8 @@ export default function HomePage() {
           ></div>
         </div>
 
-        {/* Scroll Indicator with smooth animation */}
-        <div className="absolute bottom-28 left-1/2 transform -translate-x-1/2 z-40">
+        {/* Scroll Indicator with smooth animation - hidden on mobile */}
+        <div className="hidden md:flex absolute bottom-28 left-1/2 transform -translate-x-1/2 z-40">
           <a 
             href="#features" 
             className="flex flex-col items-center text-white/70 hover:text-white transition-colors duration-300 group"
