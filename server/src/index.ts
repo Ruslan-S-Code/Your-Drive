@@ -28,14 +28,30 @@ const allowedOrigins = process.env.FRONTEND_URL
   ? [process.env.FRONTEND_URL]
   : ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
+// In production, allow all origins from Vercel (they use multiple domains)
+// In development, allow localhost origins
+const isProduction = process.env.NODE_ENV === 'production';
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
+    
+    // In production, allow all origins (Vercel uses multiple domains)
+    if (isProduction) {
+      return callback(null, true);
+    }
+    
+    // In development, check against allowed origins
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(null, true); // Allow all origins in development
+      // Allow localhost in development
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow all in development for flexibility
+      }
     }
   },
   credentials: true,
@@ -58,6 +74,27 @@ app.use('/api/bookings', bookingsRoutes);
 app.use('/api/profiles', profilesRoutes);
 app.use('/api/storage', storageRoutes);
 app.use('/api/favorites', favoritesRoutes);
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Your Drive API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      vehicles: '/api/vehicles',
+      locations: '/api/locations',
+      reviews: '/api/reviews',
+      bookings: '/api/bookings',
+      profiles: '/api/profiles',
+      storage: '/api/storage',
+      favorites: '/api/favorites'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Health check
 app.get('/api/health', (req, res) => {

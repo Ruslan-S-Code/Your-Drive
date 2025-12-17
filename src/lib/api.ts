@@ -19,10 +19,10 @@ const getApiUrl = (): string => {
 
 const API_URL = getApiUrl();
 
-// Log API URL in development for debugging
-if (import.meta.env.DEV) {
-  console.log('[API] Using API URL:', API_URL);
-}
+// Log API URL for debugging (both dev and prod)
+console.log('[API] Environment:', import.meta.env.MODE);
+console.log('[API] Using API URL:', API_URL);
+console.log('[API] VITE_API_URL env var:', import.meta.env.VITE_API_URL || 'not set');
 
 // Helper function to check if backend is ready
 async function waitForBackend(maxAttempts = 10, delay = 1000): Promise<boolean> {
@@ -162,17 +162,28 @@ async function apiRequest<T>(
   }
 
   try {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+    const fullUrl = `${API_URL}${endpoint}`;
+    console.log(`[API] Requesting: ${fullUrl}`);
+    
+    const response = await fetch(fullUrl, {
+      ...options,
+      headers,
+    });
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-    throw new Error(error.error || `HTTP error! status: ${response.status}`);
-  }
+    if (!response.ok) {
+      const errorText = await response.text();
+      let error;
+      try {
+        error = JSON.parse(errorText);
+      } catch {
+        error = { error: errorText || `HTTP error! status: ${response.status}` };
+      }
+      console.error(`[API] Error response from ${fullUrl}:`, error);
+      throw new Error(error.error || error.message || `HTTP error! status: ${response.status}`);
+    }
 
-  return response.json();
+    const data = await response.json();
+    return data;
   } catch (error) {
     if (error instanceof TypeError && error.message.includes('fetch')) {
       console.error(`[API] Failed to fetch from ${API_URL}${endpoint}:`, error);
