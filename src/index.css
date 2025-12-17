@@ -99,6 +99,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Стили для скроллбара */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -111,6 +112,26 @@ h1, h2, h3, h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Скрыть горизонтальный скроллбар на мобильных устройствах */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar:horizontal {
+    display: none;
+    height: 0;
+  }
+  
+  html, body {
+    overflow-x: hidden !important;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  html::-webkit-scrollbar:horizontal,
+  body::-webkit-scrollbar:horizontal {
+    display: none;
+    height: 0;
+  }
 }
 
 /* Animations */

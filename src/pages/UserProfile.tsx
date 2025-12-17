@@ -55,6 +55,49 @@ const UserProfile = () => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isCountryModalOpen, setIsCountryModalOpen] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
+  const [manualCodeInput, setManualCodeInput] = useState("");
+
+  // Функция для определения страны по коду телефона
+  const detectCountryByPhoneCode = (phoneCode: string): string | null => {
+    if (!phoneCode) return null;
+    const code = phoneCode.trim().replace(/^\+/, '');
+    const country = countryCodes.find(c => c.phone.replace(/^\+/, '') === code);
+    return country ? country.code : null;
+  };
+
+  // Обработчик выбора страны из списка
+  const handleCountrySelect = (countryCode: string) => {
+    setFormData(prev => ({ ...prev, countryCode }));
+    setIsCountryModalOpen(false);
+    setCountrySearch("");
+    setManualCodeInput("");
+  };
+
+  // Обработчик ручного ввода кода
+  const handleManualCodeSubmit = () => {
+    if (!manualCodeInput.trim()) return;
+    
+    const code = manualCodeInput.trim().startsWith('+') 
+      ? manualCodeInput.trim() 
+      : `+${manualCodeInput.trim()}`;
+    
+    const detectedCountry = detectCountryByPhoneCode(code);
+    
+    if (detectedCountry) {
+      handleCountrySelect(detectedCountry);
+    } else {
+      // Если страна не найдена, все равно сохраняем код
+      const country = countryCodes.find(c => c.phone === code);
+      if (country) {
+        handleCountrySelect(country.code);
+      } else {
+        // Показываем сообщение, что страна не найдена, но позволяем использовать код
+        alert(`Страна для кода ${code} не найдена. Выберите страну из списка.`);
+      }
+    }
+  };
 
   // Проверяем query параметр для открытия нужной вкладки
   useEffect(() => {
@@ -1059,34 +1102,34 @@ const UserProfile = () => {
                   >
                     Ländercode
                   </label>
-                  <div className="relative">
-                    <select
-                      id="countryCode"
-                      name="countryCode"
-                      value={formData.countryCode}
-                      onChange={handleInputChange}
-                      className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 pl-10 text-sm dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all shadow-elegant appearance-none cursor-pointer"
-                    >
-                      <option value="">--</option>
-                      {countryCodes.map((country) => (
-                        <option key={country.code} value={country.code}>
-                          {country.code} {country.phone}
-                        </option>
-                      ))}
-                    </select>
-                    {formData.countryCode && (
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <ReactCountryFlag
-                          countryCode={formData.countryCode}
-                          svg
-                          style={{
-                            width: '1.25rem',
-                            height: '1rem',
-                          }}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsCountryModalOpen(true)}
+                    className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 pl-10 pr-4 text-sm dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all shadow-elegant cursor-pointer text-left flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      {formData.countryCode ? (
+                        <>
+                          <ReactCountryFlag
+                            countryCode={formData.countryCode}
+                            svg
+                            style={{
+                              width: '1.25rem',
+                              height: '1rem',
+                            }}
+                          />
+                          <span>
+                            {countryCodes.find(c => c.code === formData.countryCode)?.phone || formData.countryCode}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-gray-400">--</span>
+                      )}
+                    </div>
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
                 </div>
                 <div>
                   <label
@@ -1140,6 +1183,129 @@ const UserProfile = () => {
           </div>
         )}
       </main>
+
+      {/* Country Code Selection Modal */}
+      {isCountryModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setIsCountryModalOpen(false)}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[80vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Ländercode auswählen
+                </h3>
+                <button
+                  onClick={() => setIsCountryModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Manual Code Input Section */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Code manuell eingeben
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={manualCodeInput}
+                  onChange={(e) => setManualCodeInput(e.target.value)}
+                  placeholder="+49 oder 49"
+                  className="flex-1 border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 text-sm dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleManualCodeSubmit();
+                    }
+                  }}
+                />
+                <button
+                  onClick={handleManualCodeSubmit}
+                  className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium transition-colors"
+                >
+                  Suchen
+                </button>
+              </div>
+              {manualCodeInput && detectCountryByPhoneCode(manualCodeInput) && (
+                <p className="text-xs text-green-600 dark:text-green-400 mt-2">
+                  ✓ {countryCodes.find(c => c.code === detectCountryByPhoneCode(manualCodeInput))?.name}
+                </p>
+              )}
+            </div>
+
+            {/* Search Input */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <input
+                type="text"
+                value={countrySearch}
+                onChange={(e) => setCountrySearch(e.target.value)}
+                placeholder="Land oder Code suchen..."
+                className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 text-sm dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                autoFocus
+              />
+            </div>
+
+            {/* Country List */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-1">
+                {countryCodes
+                  .filter(country => {
+                    const searchLower = countrySearch.toLowerCase();
+                    return (
+                      country.name.toLowerCase().includes(searchLower) ||
+                      country.code.toLowerCase().includes(searchLower) ||
+                      country.phone.toLowerCase().includes(searchLower)
+                    );
+                  })
+                  .map((country) => (
+                    <button
+                      key={country.code}
+                      onClick={() => handleCountrySelect(country.code)}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-left ${
+                        formData.countryCode === country.code
+                          ? 'bg-orange-100 dark:bg-orange-900/30 border-2 border-orange-500'
+                          : 'bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border-2 border-transparent'
+                      }`}
+                    >
+                      <ReactCountryFlag
+                        countryCode={country.code}
+                        svg
+                        style={{
+                          width: '1.5rem',
+                          height: '1.125rem',
+                        }}
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {country.name}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {country.code} • {country.phone}
+                        </div>
+                      </div>
+                      {formData.countryCode === country.code && (
+                        <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="relative z-10">
         <Footer />
       </div>

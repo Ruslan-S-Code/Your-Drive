@@ -311,6 +311,15 @@ export default function PaymentPage() {
   // Weiter zum nächsten Schritt
   const nextStep = () => {
     if (currentStep === "billing") {
+      // Валидация обязательных полей Billing Info
+      if (!billingInfo.name || !billingInfo.name.trim()) {
+        alert("Bitte geben Sie Ihren Namen ein.");
+        return;
+      }
+      if (!billingInfo.phoneNumber || !billingInfo.phoneNumber.trim()) {
+        alert("Bitte geben Sie Ihre Telefonnummer ein.");
+        return;
+      }
       setCurrentStep("rental");
     } else if (currentStep === "rental") {
       const pickup = new Date(
@@ -520,14 +529,14 @@ export default function PaymentPage() {
                         htmlFor="name"
                         className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                       >
-                        Name
+                        Name <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         id="name"
                         name="name"
                         placeholder="Ihr Name"
-                        className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+                        className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
                         value={billingInfo.name}
                         onChange={handleBillingChange}
                         required
@@ -538,14 +547,14 @@ export default function PaymentPage() {
                         htmlFor="phoneNumber"
                         className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                       >
-                        Telefonnummer
+                        Telefonnummer <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="tel"
                         id="phoneNumber"
                         name="phoneNumber"
                         placeholder="Telefonnummer"
-                        className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+                        className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
                         value={billingInfo.phoneNumber}
                         onChange={handleBillingChange}
                         required
@@ -772,7 +781,7 @@ export default function PaymentPage() {
                     </button>
                     <button
                       onClick={nextStep}
-                      className="bg-gray-700 dark:bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700 transition-smooth shadow-elegant hover:shadow-elegant-lg button-press inline-flex items-center font-medium"
+                      className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-smooth shadow-elegant hover:shadow-glow-orange button-press font-medium inline-flex items-center justify-center"
                     >
                       Weiter <MdKeyboardArrowRight className="ml-1" />
                     </button>
