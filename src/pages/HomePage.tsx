@@ -215,8 +215,8 @@ export default function HomePage() {
           </a>
         </div>
 
-        {/* Image Navigation Dots with Progress */}
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-40 flex space-x-3 items-center">
+        {/* Image Navigation Dots with Progress - hidden on mobile */}
+        <div className="hidden md:flex absolute bottom-20 left-1/2 transform -translate-x-1/2 z-40 space-x-3 items-center">
           {heroImages.map((_, index) => (
             <button
               key={index}

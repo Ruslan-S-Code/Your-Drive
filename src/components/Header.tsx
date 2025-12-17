@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
-import { useLanguage } from "../contexts/LanguageContext";
 import { useNotifications } from "../contexts/NotificationContext";
 import { FiSun, FiMoon, FiBell, FiUser, FiMenu, FiX } from "react-icons/fi";
 
@@ -11,7 +10,6 @@ export default function Header() {
   const navigate = useNavigate();
   const { session, loading, handleLogout, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { language, toggleLanguage, t } = useLanguage();
   const { unreadCount } = useNotifications();
 
   const handleNotificationClick = () => {
@@ -105,7 +103,7 @@ export default function Header() {
                       onClick={handleLogout}
                       className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
                     >
-                      {t("auth.logout")}
+                      Abmelden
                     </button>
                   </>
                 ) : (
@@ -113,7 +111,7 @@ export default function Header() {
                     to="/login"
                     className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
                   >
-                    {t("auth.login")}
+                    Anmelden
                   </Link>
                 )}
               </div>
@@ -166,18 +164,6 @@ export default function Header() {
                   ) : (
                     <FiSun className="w-5 h-5 text-gray-300" />
                   )}
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-300">
-                  Language
-                </span>
-                <button
-                  onClick={toggleLanguage}
-                  className="px-3 py-1 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors text-sm font-medium"
-                >
-                  {language.toUpperCase()}
                 </button>
               </div>
 
@@ -237,7 +223,7 @@ export default function Header() {
                         }}
                         className="w-full text-left text-sm font-medium text-gray-300 hover:text-orange-500 transition-colors p-2 rounded-lg hover:bg-gray-800"
                       >
-                        {t("auth.logout")}
+                        Abmelden
                       </button>
                     </>
                   ) : (
@@ -246,7 +232,7 @@ export default function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                       className="block text-sm font-medium text-gray-300 hover:text-orange-500 transition-colors p-2 rounded-lg hover:bg-gray-800"
                     >
-                      {t("auth.login")}
+                      Anmelden
                     </Link>
                   )}
                 </div>
