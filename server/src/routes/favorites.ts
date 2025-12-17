@@ -1,6 +1,6 @@
 import express, { Response } from "express";
-import pool from "../db/database";
-import { authenticateToken, AuthRequest } from "../middleware/auth";
+import pool from "../db/database.js";
+import { authenticateToken, AuthRequest } from "../middleware/auth.js";
 
 const router = express.Router();
 
