@@ -182,6 +182,50 @@ async function startServer() {
       }
     } else {
       console.log('✅ Database tables already exist');
+      
+      // Check if database has data
+      const vehiclesCount = await pool.query('SELECT COUNT(*) FROM vehicles');
+      const count = parseInt(vehiclesCount.rows[0].count);
+      
+      if (count === 0) {
+        console.log('⚠️  Database is empty. To populate data:');
+        console.log('');
+        console.log('📋 HOW TO RUN SEED IN RENDER:');
+        console.log('   1. Go to https://dashboard.render.com');
+        console.log('   2. Click on your backend service "Your-Drive"');
+        console.log('   3. In the left sidebar, click "Shell" (terminal icon)');
+        console.log('   4. In the Shell terminal, type: cd server && npm run db:seed');
+        console.log('   5. Press Enter and wait for "✅ Database seeded successfully!"');
+        console.log('');
+        console.log('   OR set environment variable AUTO_SEED=true and restart service');
+      } else {
+        console.log(`✅ Database has ${count} vehicles`);
+      }
+      
+      // Auto-seed if environment variable is set
+      if (count === 0 && process.env.AUTO_SEED === 'true') {
+        console.log('🌱 AUTO_SEED enabled, running seed...');
+        try {
+          const { spawn } = await import('child_process');
+          const seedProcess = spawn('npm', ['run', 'db:seed'], {
+            cwd: process.cwd(),
+            stdio: 'inherit',
+            shell: true,
+            env: process.env
+          });
+          
+          seedProcess.on('close', async (code) => {
+            if (code === 0) {
+              const newCount = await pool.query('SELECT COUNT(*) FROM vehicles');
+              console.log(`✅ Auto-seed completed! Database now has ${newCount.rows[0].count} vehicles`);
+            } else {
+              console.error('❌ Auto-seed failed with code:', code);
+            }
+          });
+        } catch (error) {
+          console.error('❌ Auto-seed error:', error);
+        }
+      }
     }
 
     app.listen(PORT, () => {

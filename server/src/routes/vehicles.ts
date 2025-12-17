@@ -93,6 +93,7 @@ router.get('/', async (req: Request, res: Response) => {
     query += ' ORDER BY priceperday ASC';
 
     const result = await pool.query(query, params);
+    console.log(`[Vehicles] Returning ${result.rows.length} vehicles`);
     res.json(result.rows);
   } catch (error: any) {
     console.error('Get vehicles error:', error);
