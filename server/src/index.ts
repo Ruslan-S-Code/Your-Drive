@@ -207,23 +207,29 @@ async function startServer() {
         console.log('🌱 AUTO_SEED enabled, running seed...');
         try {
           const { spawn } = await import('child_process');
+          // Determine correct path - in production, we're in server/dist, so go up to server root
+          const serverRoot = path.join(__dirname, '..');
           const seedProcess = spawn('npm', ['run', 'db:seed'], {
-            cwd: process.cwd(),
+            cwd: serverRoot,
             stdio: 'inherit',
             shell: true,
-            env: process.env
+            env: { ...process.env, NODE_ENV: 'production' }
           });
           
           seedProcess.on('close', async (code) => {
             if (code === 0) {
+              // Wait a bit for seed to complete
+              await new Promise(resolve => setTimeout(resolve, 2000));
               const newCount = await pool.query('SELECT COUNT(*) FROM vehicles');
               console.log(`✅ Auto-seed completed! Database now has ${newCount.rows[0].count} vehicles`);
             } else {
               console.error('❌ Auto-seed failed with code:', code);
+              console.log('💡 Try running seed manually via Shell: cd server && npm run db:seed');
             }
           });
         } catch (error) {
           console.error('❌ Auto-seed error:', error);
+          console.log('💡 Try running seed manually via Shell: cd server && npm run db:seed');
         }
       }
     }
