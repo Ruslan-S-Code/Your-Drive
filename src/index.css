@@ -1,0 +1,616 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 24.6 95% 53.1%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 60 4.8% 95.9%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 60 4.8% 95.9%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 60 4.8% 95.9%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 24.6 95% 53.1%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 24.6 95% 53.1%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 24.6 95% 53.1%;
+  }
+}
+
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 100%;
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100vh;
+  height: auto;
+  position: relative;
+  overscroll-behavior: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Улучшения для мобильных устройств */
+@media (max-width: 640px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+.animate-fade-in-up-delay {
+  animation: fade-in-up 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-2 {
+  animation: fade-in-up 0.8s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-3 {
+  animation: fade-in-up 0.8s ease-out 0.6s forwards;
+  opacity: 0;
+}
+
+/* Smooth scroll behavior - уже определено выше */
+
+/* Parallax container */
+.parallax-container {
+  will-change: transform;
+}
+
+/* Enhanced parallax performance */
+.parallax-layer {
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Smooth parallax transitions */
+@media (prefers-reduced-motion: no-preference) {
+  .parallax-smooth {
+    transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+}
+
+/* Disable parallax for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .parallax-layer,
+  .parallax-smooth {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Smooth transitions for sections */
+section {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Enhanced hover effects */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth section transitions */
+section {
+  scroll-margin-top: 80px;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Image crossfade animation */
+@keyframes crossfade {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(1.05);
+    filter: blur(4px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.image-crossfade {
+  animation: crossfade 2s ease-in-out infinite;
+}
+
+/* Enhanced shadows and effects */
+.shadow-elegant {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-elegant-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-elegant-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-glow-orange {
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3), 0 0 40px rgba(249, 115, 22, 0.1);
+}
+
+.shadow-glow-orange-lg {
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.4), 0 0 60px rgba(249, 115, 22, 0.2);
+}
+
+/* Smooth transitions */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-smooth-slow {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Backdrop blur effects */
+.backdrop-blur-strong {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Gradient overlays */
+.gradient-overlay {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(234, 88, 12, 0.05) 100%);
+}
+
+.gradient-overlay-dark {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Button press effect */
+.button-press:active {
+  transform: scale(0.98);
+}
+
+/* Custom Checkbox Styles */
+.custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.custom-checkbox:checked {
+  background-color: #f97316;
+  border-color: #f97316;
+}
+
+.custom-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox:hover {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+.custom-checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+  border-color: #f97316;
+}
+
+.dark .custom-checkbox {
+  background-color: #1f2937;
+  border-color: #4b5563;
+}
+
+.dark .custom-checkbox:checked {
+  background-color: #f97316;
+  border-color: #f97316;
+}
+
+.dark .custom-checkbox:hover {
+  border-color: #f97316;
+}
+
+/* Custom Date and Time Input Styles */
+/* Hero section height adjustment for header */
+.hero-section-height {
+  height: calc(100vh - 64px) !important;
+  min-height: calc(100vh - 64px) !important;
+}
+
+@media (min-width: 768px) {
+  .hero-section-height {
+    height: calc(100vh - 80px) !important;
+    min-height: calc(100vh - 80px) !important;
+  }
+}
+
+.custom-date-input,
+.custom-time-input {
+  position: relative;
+}
+
+.custom-date-input input[type="date"],
+.custom-time-input input[type="time"] {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Hide browser's built-in calendar/time picker icons visually, but keep them functional */
+.custom-date-input input[type="date"]::-webkit-calendar-picker-indicator,
+.custom-time-input input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  right: 0 !important;
+  cursor: pointer !important;
+  z-index: 1 !important;
+}
+
+/* Also hide for Firefox and other browsers - keep functional */
+.custom-date-input input[type="date"]::-moz-calendar-picker-indicator,
+.custom-time-input input[type="time"]::-moz-calendar-picker-indicator {
+  opacity: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  cursor: pointer !important;
+}
+
+/* For Edge and IE - hide clear button but keep picker functional */
+.custom-date-input input[type="date"]::-ms-clear,
+.custom-time-input input[type="time"]::-ms-clear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Custom Select Arrow */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  padding-right: 2.5rem;
+}
+
+.dark select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ccc' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+}
+
+select:hover {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f97316' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+}
+
+/* Enhanced input focus styles */
+input[type="date"]:focus,
+input[type="time"]:focus {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* Custom Range Slider Styles */
+.custom-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 8px;
+}
+
+.custom-range-slider::-webkit-slider-track {
+  background: linear-gradient(to right, #f97316 0%, #e5e7eb 0%);
+  height: 8px;
+  border-radius: 9999px;
+  position: relative;
+}
+
+.dark .custom-range-slider::-webkit-slider-track {
+  background: linear-gradient(to right, #f97316 0%, #4b5563 0%);
+}
+
+.custom-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 4px 8px rgba(249, 115, 22, 0.3), 0 0 0 4px rgba(249, 115, 22, 0.1), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.custom-range-slider::-webkit-slider-thumb::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+.custom-range-slider::-webkit-slider-thumb:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  box-shadow: 0 6px 12px rgba(249, 115, 22, 0.4), 0 0 0 6px rgba(249, 115, 22, 0.15);
+  transform: scale(1.15);
+}
+
+.custom-range-slider::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3), 0 0 0 4px rgba(249, 115, 22, 0.2);
+}
+
+.dark .custom-range-slider::-webkit-slider-thumb {
+  border-color: #1f2937;
+  box-shadow: 0 4px 8px rgba(249, 115, 22, 0.4), 0 0 0 4px rgba(249, 115, 22, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dark .custom-range-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 6px 12px rgba(249, 115, 22, 0.5), 0 0 0 6px rgba(249, 115, 22, 0.25);
+}
+
+.custom-range-slider::-moz-range-track {
+  background: linear-gradient(to right, #f97316 0%, #e5e7eb 0%);
+  height: 8px;
+  border-radius: 9999px;
+  border: none;
+}
+
+.dark .custom-range-slider::-moz-range-track {
+  background: linear-gradient(to right, #f97316 0%, #4b5563 0%);
+}
+
+.custom-range-slider::-moz-range-thumb {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 4px 8px rgba(249, 115, 22, 0.3), 0 0 0 4px rgba(249, 115, 22, 0.1);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-range-slider::-moz-range-thumb:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  box-shadow: 0 6px 12px rgba(249, 115, 22, 0.4), 0 0 0 6px rgba(249, 115, 22, 0.15);
+  transform: scale(1.15);
+}
+
+.custom-range-slider::-moz-range-thumb:active {
+  transform: scale(1.05);
+}
+
+.dark .custom-range-slider::-moz-range-thumb {
+  border-color: #1f2937;
+  box-shadow: 0 4px 8px rgba(249, 115, 22, 0.4), 0 0 0 4px rgba(249, 115, 22, 0.2);
+}
+
+.dark .custom-range-slider::-moz-range-thumb:hover {
+  box-shadow: 0 6px 12px rgba(249, 115, 22, 0.5), 0 0 0 6px rgba(249, 115, 22, 0.25);
+}
+
+/* Loading shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(to right, #f0f0f0 0%, #e0e0e0 20%, #f0f0f0 40%, #f0f0f0 100%);
+  background-size: 1000px 100%;
+}
+
+/* Prevent horizontal scroll on all containers */
+.container {
+  overflow-x: hidden;
+}
+
+/* Toggle switch styles */
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  height: 1.75rem;
+  width: 3rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  transition-property: background-color;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
+
+.toggle-switch:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: rgb(249 115 22);
+  ring-offset: 2px;
+}
+
+.toggle-switch-on {
+  background-color: rgb(249 115 22);
+}
+
+.toggle-switch-off {
+  background-color: rgb(209 213 219);
+}
+
+.dark .toggle-switch-off {
+  background-color: rgb(75 85 99);
+}
+
+.toggle-switch-thumb {
+  pointer-events: none;
+  display: inline-block;
+  height: 1.5rem;
+  width: 1.5rem;
+  transform: translateX(0);
+  border-radius: 9999px;
+  background-color: white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition-property: transform;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
+
+.toggle-switch-thumb-on {
+  transform: translateX(1.25rem);
+}
