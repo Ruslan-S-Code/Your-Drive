@@ -110,21 +110,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Reviews table
-CREATE TABLE IF NOT EXISTS reviews (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  vehicleid VARCHAR(100) NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  text TEXT NOT NULL,
-  stars INTEGER CHECK (stars >= 1 AND stars <= 5),
-  date VARCHAR(50),
-  booking_id UUID REFERENCES bookings(id) ON DELETE SET NULL,
-  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (vehicleid) REFERENCES vehicles(vehicleid) ON DELETE CASCADE
-);
-
--- Bookings table
+-- Bookings table (must be created before reviews)
 CREATE TABLE IF NOT EXISTS bookings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   vehicle_id UUID NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,
@@ -137,6 +123,19 @@ CREATE TABLE IF NOT EXISTS bookings (
   status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled', 'completed')),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Reviews table (created after bookings to allow foreign key reference)
+CREATE TABLE IF NOT EXISTS reviews (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  vehicleid VARCHAR(100) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  text TEXT NOT NULL,
+  stars INTEGER CHECK (stars >= 1 AND stars <= 5),
+  date VARCHAR(50),
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (vehicleid) REFERENCES vehicles(vehicleid) ON DELETE CASCADE
 );
 
 -- Password reset tokens table

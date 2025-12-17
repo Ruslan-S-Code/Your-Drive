@@ -42,6 +42,20 @@ function getCityCoordinates(cityName: string): string {
 // Helper function to automatically complete expired bookings
 async function completeExpiredBookings() {
   try {
+    // Check if bookings table exists before trying to query it
+    const tableCheck = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'bookings'
+      );
+    `);
+    
+    if (!tableCheck.rows[0].exists) {
+      // Table doesn't exist yet, skip this run
+      return;
+    }
+
     const now = new Date();
     const result = await pool.query(
       `SELECT id, vehicle_id, pickup_location, dropoff_location 
@@ -105,13 +119,22 @@ async function completeExpiredBookings() {
       }
     }
   } catch (error) {
+    // Silently ignore errors during migration phase
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes('does not exist')) {
+      // Table doesn't exist yet, this is expected during migrations
+      return;
+    }
     console.error('Error completing expired bookings:', error);
   }
 }
 
+// Start checking expired bookings after a short delay to allow migrations to complete
 // Run on module load and set interval to check every hour
-completeExpiredBookings();
-setInterval(completeExpiredBookings, 60 * 60 * 1000); // Check every hour
+setTimeout(() => {
+  completeExpiredBookings();
+  setInterval(completeExpiredBookings, 60 * 60 * 1000); // Check every hour
+}, 5000); // Wait 5 seconds for migrations to complete
 
 // Create booking
 router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
