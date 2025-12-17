@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 import pool from './db/database.js';
 
 // Routes
@@ -71,6 +72,62 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
+// Check if database tables exist
+async function checkTablesExist(): Promise<boolean> {
+  try {
+    const result = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'users'
+      );
+    `);
+    return result.rows[0].exists;
+  } catch (error) {
+    console.error('Error checking tables:', error);
+    return false;
+  }
+}
+
+// Run database migrations
+async function runMigrations() {
+  try {
+    console.log('🔄 Running database migrations...');
+    
+    // Try to read schema.sql from multiple possible locations
+    const possiblePaths = [
+      path.join(__dirname, 'db', 'schema.sql'), // Compiled dist/db/schema.sql
+      path.join(__dirname, '../src/db/schema.sql'), // Source src/db/schema.sql (dev)
+      path.join(process.cwd(), 'src/db/schema.sql'), // From project root
+      path.join(process.cwd(), 'server/src/db/schema.sql'), // From workspace root
+    ];
+    
+    let schemaPath: string | null = null;
+    for (const possiblePath of possiblePaths) {
+      if (fs.existsSync(possiblePath)) {
+        schemaPath = possiblePath;
+        break;
+      }
+    }
+    
+    if (!schemaPath) {
+      console.error('❌ schema.sql file not found in any of the expected locations:');
+      possiblePaths.forEach(p => console.error(`   - ${p}`));
+      return false;
+    }
+    
+    console.log(`📄 Using schema file: ${schemaPath}`);
+    const schema = fs.readFileSync(schemaPath, 'utf-8');
+    await pool.query(schema);
+    
+    console.log('✅ Database migration completed successfully!');
+    return true;
+  } catch (error) {
+    console.error('❌ Migration failed:', error);
+    return false;
+  }
+}
+
 // Test database connection before starting server
 async function startServer() {
   try {
@@ -78,9 +135,21 @@ async function startServer() {
     await pool.query('SELECT 1');
     console.log('✅ Database connection successful');
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📡 API available at http://localhost:${PORT}/api`);
+    // Check if tables exist, if not run migrations
+    const tablesExist = await checkTablesExist();
+    if (!tablesExist) {
+      console.log('📋 Database tables not found, running migrations...');
+      const migrationSuccess = await runMigrations();
+      if (!migrationSuccess) {
+        console.error('❌ Failed to run migrations. Server will start but may have issues.');
+      }
+    } else {
+      console.log('✅ Database tables already exist');
+    }
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`📡 API available at http://localhost:${PORT}/api`);
       console.log(`🌐 CORS enabled for: ${allowedOrigins.join(', ')}`);
     });
   } catch (error) {
