@@ -16,7 +16,14 @@ router.post('/upload/avatar', authenticateToken, upload.single('avatar'), async 
     }
 
     const filePath = `/uploads/avatars/${req.file.filename}`;
-    const fullUrl = `${req.protocol}://${req.get('host')}${filePath}`;
+    
+    // Determine protocol - check X-Forwarded-Proto header (from proxy) or use environment variable
+    const protocol = req.get('X-Forwarded-Proto') || 
+                     (process.env.NODE_ENV === 'production' ? 'https' : req.protocol);
+    
+    // Use environment variable for base URL if available, otherwise construct from request
+    const baseUrl = process.env.BACKEND_URL || `${protocol}://${req.get('host')}`;
+    const fullUrl = `${baseUrl}${filePath}`;
 
     res.json({
       url: fullUrl,

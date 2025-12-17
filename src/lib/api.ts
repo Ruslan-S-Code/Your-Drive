@@ -418,8 +418,12 @@ export function getImageUrl(imagePath: string | null | undefined): string {
     return '';
   }
   
-  // If it's already a full URL (http/https), return as is
+  // If it's already a full URL (http/https), convert http to https for security
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    // Convert http to https to avoid mixed content warnings
+    if (imagePath.startsWith('http://')) {
+      return imagePath.replace('http://', 'https://');
+    }
     return imagePath;
   }
   
